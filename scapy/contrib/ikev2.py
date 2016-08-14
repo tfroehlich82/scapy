@@ -5,17 +5,17 @@
 # scapy.contrib.description = IKEv2
 # scapy.contrib.status = loads
 
-from scapy.all import *
 import logging
+import struct
 
 
 ## Modified from the original ISAKMP code by Yaron Sheffer <yaronf.ietf@gmail.com>, June 2010.
 
-import struct
 from scapy.packet import *
 from scapy.fields import *
 from scapy.ansmachine import *
 from scapy.layers.inet import IP,UDP
+from scapy.layers.isakmp import ISAKMP
 from scapy.sendrecv import sr
 
 # see http://www.iana.org/assignments/ikev2-parameters for details
@@ -343,7 +343,7 @@ for i, payloadname in enumerate(IKEv2_payload_type):
         IKEv2_payload_type_overload[globals()[name]] = {"next_payload": i}
 
 del i, payloadname, name
-IKEv2_class.overload_fields = IKEv2_payload_type_overload.copy()
+IKEv2_class._overload_fields = IKEv2_payload_type_overload.copy()
 
 split_layers(UDP, ISAKMP, sport=500)
 split_layers(UDP, ISAKMP, dport=500)
@@ -358,4 +358,5 @@ def ikev2scan(ip):
 # conf.debug_dissector = 1
 
 if __name__ == "__main__":
+    from scapy.main import interact
     interact(mydict=globals(), mybanner="IKEv2 alpha-level protocol implementation")
